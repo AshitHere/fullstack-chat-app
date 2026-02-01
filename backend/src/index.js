@@ -1,3 +1,4 @@
+
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -13,16 +14,14 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
+const frontendPath = path.join(__dirname, "frontend", "dist");
 
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://fullstack-chat-app-3-gkl1.onrender.com"
-        : "http://localhost:5173",
+    origin: true,
     credentials: true,
   })
 );
@@ -32,29 +31,15 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// ✅ serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+  app.use(express.static(frontendPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
 server.listen(PORT, () => {
   console.log("Server running on PORT:", PORT);
   connectDB();
-});
-
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirrname = path.dirname(__filename);
-
-// Serve frontend
-app.use(express.static(path.join(__dirrname, "../frontend/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirrname, "../frontend/dist/index.html"));
 });
