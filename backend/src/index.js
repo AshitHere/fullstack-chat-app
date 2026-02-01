@@ -45,3 +45,16 @@ server.listen(PORT, () => {
   console.log("Server running on PORT:", PORT);
   connectDB();
 });
+
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirrname = path.dirname(__filename);
+
+// Serve frontend
+app.use(express.static(path.join(__dirrname, "../frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirrname, "../frontend/dist/index.html"));
+});
